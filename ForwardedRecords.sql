@@ -40,14 +40,14 @@ INSERT dbo.Cliente (Nome,DataAniversario)
 VALUES (REPLICATE('E', 2000), getdate())
 go
 
--- Quantas páginas o TABLE SCAN consome
+-- Quantas pÃ¡ginas o TABLE SCAN consome
 SET STATISTICS IO ON
 
 SELECT * 
-FROM dbo.Cliente -- 1° EXEC: Table 'Cliente'. Scan count 1, logical reads 2
+FROM dbo.Cliente -- 1Â° EXEC: Table 'Cliente'. Scan count 1, logical reads 2
 
 
--- Retorna o endereço de todas as páginas que compôe a tabela
+-- Retorna o endereÃ§o de todas as pÃ¡ginas que compÃ´e a tabela
 SELECT	
 	a.allocation_unit_type_desc,
 	a.is_allocated,
@@ -56,17 +56,17 @@ SELECT
 	a.page_free_space_percent
 FROM sys.dm_db_database_page_allocations(DB_ID(), OBJECT_ID('dbo.Cliente', 'U'), 0, NULL, 'DETAILED') as a
 WHERE a.is_allocated = 1
-ORDER BY a.page_type DESC, a.allocated_page_page_id  -- 1° EXEC: Páginas 119(IAM) 440, 441
+ORDER BY a.page_type DESC, a.allocated_page_page_id  -- 1Â° EXEC: PÃ¡ginas 119(IAM) 440, 441
 
 
--- Retorna em que página cada linha está
+-- Retorna em que pÃ¡gina cada linha estÃ¡
 SELECT
 	b.*, a.*
 FROM dbo.Cliente as a
-CROSS APPLY sys.fn_PhysLocCracker(%%physloc%%) AS b  -- 1° EXEC: pg 312 (PK 1,2,3), pg 313 (PK 4,5)
+CROSS APPLY sys.fn_PhysLocCracker(%%physloc%%) AS b  -- 1Â° EXEC: pg 312 (PK 1,2,3), pg 313 (PK 4,5)
 
 
--- Mostra a página
+-- Mostra a pÃ¡gina
 DBCC TRACEON (3604)
 DBCC PAGE (HandsOn, 1, 440, 3)
 DBCC PAGE (HandsOn, 1, 441, 3)
@@ -88,11 +88,11 @@ FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('dbo.Cliente', 'U'), 0, N
 SELECT * 
 FROM dbo.Cliente
 
--- 1° EXEC: Table 'Cliente'. Scan count 1, logical reads 2
--- 2° EXEC: Table 'Cliente'. Scan count 1, logical reads 4
+-- 1Â° EXEC: Table 'Cliente'. Scan count 1, logical reads 2
+-- 2Â° EXEC: Table 'Cliente'. Scan count 1, logical reads 4
 
 
--- Retorna o endereço de todas as páginas que compôe a tabela
+-- Retorna o endereÃ§o de todas as pÃ¡ginas que compÃ´e a tabela
 SELECT	
 	a.allocation_unit_type_desc,
 	a.is_allocated,
@@ -102,8 +102,8 @@ SELECT
 FROM sys.dm_db_database_page_allocations(DB_ID(), OBJECT_ID('dbo.Cliente', 'U'), 0, NULL, 'DETAILED') as a
 WHERE a.is_allocated = 1
 ORDER BY a.page_type DESC, a.allocated_page_page_id
--- 1° EXEC: Páginas 119(IAM) 440, 441
--- 2° EXEC: Páginas 119(IAM) 440, 441, 442 (nova)
+-- 1Â° EXEC: PÃ¡ginas 119(IAM) 440, 441
+-- 2Â° EXEC: PÃ¡ginas 119(IAM) 440, 441, 442 (nova)
 
 SELECT b.*, a.*
 FROM dbo.Cliente as a
