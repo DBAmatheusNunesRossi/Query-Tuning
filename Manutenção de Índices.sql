@@ -23,7 +23,7 @@ go
 
 
 /******************************************
- Cria tabela com PK n„o sequencial CPF
+ Cria tabela com PK n√£o sequencial CPF
 *******************************************/
 CREATE TABLE dbo.Cliente_PkCPF (
 	Cliente_ID int not null IDENTITY,
@@ -44,18 +44,18 @@ DECLARE @i int = 20000
 
 WHILE @i <= 100000 BEGIN
 	INSERT dbo.Cliente_PkSequencial (CPF, Nome, DataAniversario, Obs)
-	VALUES (ltrim(str(cast(rand(@i)*1000000000 as int))),'Teste FragmentaÁ„o',getdate(),'Ocupa 3000 bytes')
+	VALUES (ltrim(str(cast(rand(@i)*1000000000 as int))),'Teste Fragmenta√ß√£o',getdate(),'Ocupa 3000 bytes')
 
 	SET @i += 1
 END
 go
 
--- Inclui 80 mil linhas em PK N„o sequencial CPF (32 segundos)
+-- Inclui 80 mil linhas em PK N√£o sequencial CPF (32 segundos)
 DECLARE @i int = 20000
 
 WHILE @i <= 100000 BEGIN
 	INSERT dbo.Cliente_PkCPF (CPF, Nome, DataAniversario, Obs)
-	VALUES (ltrim(str(cast(rand(@i)*1000000000 as int))),'Teste FragmentaÁ„o',getdate(),'Ocupa 3000 bytes')
+	VALUES (ltrim(str(cast(rand(@i)*1000000000 as int))),'Teste Fragmenta√ß√£o',getdate(),'Ocupa 3000 bytes')
 
 	SET @i += 1
 END
@@ -63,7 +63,7 @@ go
 
 
 /********************************************
- Analisa FragmentaÁ„o
+ Analisa Fragmenta√ß√£o
 *********************************************/
 SELECT 
 	a.index_type_desc, 
@@ -74,7 +74,7 @@ SELECT
 	a.forwarded_record_count,
 	a.avg_fragmentation_in_percent
 FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('dbo.Cliente_PkSequencial', 'U'), NULL, NULL, 'DETAILED') as a
--- FragmentaÁ„o Externa: 0.36%
+-- Fragmenta√ß√£o Externa: 0.36%
 
 
 SELECT 
@@ -86,17 +86,17 @@ SELECT
 	a.forwarded_record_count,
 	a.avg_fragmentation_in_percent
 FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('dbo.Cliente_PkCPF', 'U'), NULL, NULL, 'DETAILED') as a
--- FragmentaÁ„o Externa: 80.04%
+-- Fragmenta√ß√£o Externa: 80.04%
 
 ALTER INDEX pk_Cliente_PkCPF 
 ON dbo.Cliente_PkCPF REBUILD WITH (FILLFACTOR = 60)
--- FragmentaÁ„o Externa: 0.01%
+-- Fragmenta√ß√£o Externa: 0.01%
 
 DECLARE @i int = 100001
 
 WHILE @i <= 101000 BEGIN
 	INSERT dbo.Cliente_PkCPF (CPF, Nome, DataAniversario, Obs)
-	VALUES (ltrim(str(cast(rand(@i)*1000000000 as int))),'Teste FragmentaÁ„o',getdate(),'Ocupa 3000 bytes')
+	VALUES (ltrim(str(cast(rand(@i)*1000000000 as int))),'Teste Fragmenta√ß√£o',getdate(),'Ocupa 3000 bytes')
 
 	SET @i += 1
 END
